@@ -1,0 +1,43 @@
+# https://github.com/serverless-components/tencent-scf/blob/master/docs/configure.md
+
+#组件信息
+component: scf
+name: bilibili_tool
+
+#组件参数配置
+inputs:
+  name: ${name}_scf
+  namespace: default
+  enableRoleAuth: false
+  src: ./bin/publish/
+  handler: index.main_handler
+  runtime: CustomRuntime
+  region: ap-guangzhou # 函数所在区域，默认广州
+  description: This is a function in ${app} application.
+  memorySize: 128
+  initTimeout: 30
+  timeout: 86400
+  asyncRunEnable: true
+  traceEnable: true
+  events: # 根据自己的需要修改
+    - timer: # 每日任务触发器
+        parameters:
+          name: DailyTask
+          cronExpression: "0 30 12 * * * *"
+          enable: true
+          argument: Daily
+    - timer: # 天选抽奖触发器
+        parameters:
+          name: LiveLotteryTask
+          cronExpression: "0 0 */4 * * * *"
+          enable: true
+          argument: LiveLottery
+    - timer: # 自动取关
+        parameters:
+          name: UnfollowBatchedTask
+          cronExpression: "0 0 0 * * MON *"
+          enable: true
+          argument: UnfollowBatched
+  environment:
+    variables: # 根据自己的需要修改
+      Ray_BiliBiliCookies__1: 123 # buvid3=FD985DE4-0722-1288-4DDA-C2AF99452CA039939infoc; i-wanna-go-back=-1; _uuid=A9F9FEF8-DC1010-7F1D-103BC-21028DA32511440554infoc; nostalgia_conf=-1; CURRENT_BLACKGAP=0; buvid_fp_plain=undefined; DedeUserID=161772608; DedeUserID__ckMd5=2f958c107e3a09a2; rpdid=0zbfvUpRkY|wbMPUIv|tapb|3w1OrRja; b_ut=5; hit-dyn-v2=1; LIVE_BUVID=AUTO2916618340511112; b_nut=100; fingerprint3=05d7fbba76fa3f8649f6bb91ad1f57a6; is-2022-channel=1; CURRENT_QUALITY=120; SESSDATA=4c535932,1679728211,c76aa*91; bili_jct=cfcdac12024d80295a8597f7f7afa6d7; fingerprint=04149622810d0d28d2661254185e001e; buvid4=46141A72-2A30-2DF1-5A01-787D014929AE41333-022082716-SV44yNkYjlFr3BUGaT4VnoykZAmo2gA6+HhtvjH4GxbHtQiJZUOfiw==; bp_video_offset_161772608=710595080805679200; buvid_fp=04149622810d0d28d2661254185e001e; b_lsid=D95A89EC_183819ABF37; CURRENT_FNVAL=4048; sid=pj1s5ubw; theme_style=light; PVID=1; innersign=0，必填
